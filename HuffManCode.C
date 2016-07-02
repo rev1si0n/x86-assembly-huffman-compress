@@ -1,5 +1,5 @@
 //-----------------------------------------------------
-// Coded By @Òæ´ïÊÇË­
+// Coded By ZhangYiDa
 //-----------------------------------------------------
 #include<stdio.h>
 #include<stdlib.h>
@@ -7,10 +7,10 @@
 #include<windows.h>
 #define  GET_TREE  (1)
 #define  GET_CODE  (0)
-//Ê¹ÓÃÁ½¸öWIN32º¯Êı
+//ä½¿ç”¨ä¸¤ä¸ªWIN32å‡½æ•°
 #define  hFree(hMem) HeapFree(GetProcessHeap(), HEAP_NO_SERIALIZE + HEAP_ZERO_MEMORY, hMem)
 #define  hAlloc(bSize) HeapAlloc(GetProcessHeap(), HEAP_NO_SERIALIZE + HEAP_ZERO_MEMORY, bSize)
-//ÖØÒª½á¹¹µÄ½âÊÍ¶¼ÔÚ<compress.inc>ÎÄ¼şÖĞ
+//é‡è¦ç»“æ„çš„è§£é‡Šéƒ½åœ¨<compress.inc>æ–‡ä»¶ä¸­
 struct HNODE{
 	unsigned  weight;
 	unsigned  isLeaf;
@@ -32,7 +32,7 @@ struct HUFFTABL{
 	unsigned tablElems;
 	struct SUITELEM elem[256];
 };
-//C²»ÄÜÒ»´Î·µ»Ø¼¸¸öÖµ£¬Ö»ÄÜ×Ô¶¨ÒåÒ»¸ö½á¹¹·µ»Ø
+//Cä¸èƒ½ä¸€æ¬¡è¿”å›å‡ ä¸ªå€¼ï¼Œåªèƒ½è‡ªå®šä¹‰ä¸€ä¸ªç»“æ„è¿”å›
 struct POINTERS{     
 	void*p1;        
 	void*p2;
@@ -47,34 +47,34 @@ int FindSmallest(unsigned*, unsigned);
 void FailAlloc(void);
 void RCR(unsigned*, unsigned);
 /*
- *        ÒòÎª±¾³ÌĞòµÄÑ°Ö·´¿´âÊÇµØÖ·ÖµÏà¼ÓÀ´¼ÆËã½á¹¹Æ«ÒÆ¶ø²»ÊÇCÊı×éË÷Òı·½Ê½£¬ËùÒÔ½á¹¹Ö¸ÕëµÄÉùÃ÷²»Ó¦¸ÃÊÇ struct XXX aaa£¬ÕâÑù»áÑ°´íµØÖ·
- *        Èç¹ûÕâÑùÉùÃ÷£¬¼ÆËã½á¹û²»ÊÇn*sizeof(struct xx)¶øÊÇstructXX[n+n*sizeof(struct xx)],½á¹û²îÒ»´ó½Ø£¬ËùÒÔ³ÌĞòÖĞÉùÃ÷¶¼ÊÇ void*xxx
- *        ²»ÒªÎÊÎÒÎªÊ²Ã´ÕâÃ´Âé·³£¬£¨ºÃ¼¸¸öÔÂÃ»ÅöC£¬ÆäÊµÊÇÎÒÁ¬Êı×é¶¼²»»áÓÃÁË<_<¡¢£©£¬ÎÒÊÇÔÚDEBUGÊ±·¢ÏÖn*sizeof(struct HUFFCODE)Ó¦¸ÃÊÇn*8
- *        Æ«ÒÆÈ´±»Ëã³ÉÁËn*8*8£¬ºóÀ´ÏëÏë£¬Ô­À´ÊÇÉùÃ÷¸ãµÃ¹í¡£»¹ÓĞ¾ÍÊÇÎÒÖ»ÊÇÒ»¸ö³õÑ§Õß£¬×¢ÊÍ¿ÖÅÂÖ»ÓĞÎÒ×Ô¼ºÄÜ¿´¶®£¬°¥~
+ *        å› ä¸ºæœ¬ç¨‹åºçš„å¯»å€çº¯ç²¹æ˜¯åœ°å€å€¼ç›¸åŠ æ¥è®¡ç®—ç»“æ„åç§»è€Œä¸æ˜¯Cæ•°ç»„ç´¢å¼•æ–¹å¼ï¼Œæ‰€ä»¥ç»“æ„æŒ‡é’ˆçš„å£°æ˜ä¸åº”è¯¥æ˜¯ struct XXX aaaï¼Œè¿™æ ·ä¼šå¯»é”™åœ°å€
+ *        å¦‚æœè¿™æ ·å£°æ˜ï¼Œè®¡ç®—ç»“æœä¸æ˜¯n*sizeof(struct xx)è€Œæ˜¯structXX[n+n*sizeof(struct xx)],ç»“æœå·®ä¸€å¤§æˆªï¼Œæ‰€ä»¥ç¨‹åºä¸­å£°æ˜éƒ½æ˜¯ void*xxx
+ *        ä¸è¦é—®æˆ‘ä¸ºä»€ä¹ˆè¿™ä¹ˆéº»çƒ¦ï¼Œï¼ˆå¥½å‡ ä¸ªæœˆæ²¡ç¢°Cï¼Œå…¶å®æ˜¯æˆ‘è¿æ•°ç»„éƒ½ä¸ä¼šç”¨äº†<_<ã€ï¼‰ï¼Œæˆ‘æ˜¯åœ¨DEBUGæ—¶å‘ç°n*sizeof(struct HUFFCODE)åº”è¯¥æ˜¯n*8
+ *        åç§»å´è¢«ç®—æˆäº†n*8*8ï¼Œåæ¥æƒ³æƒ³ï¼ŒåŸæ¥æ˜¯å£°æ˜æå¾—é¬¼ã€‚è¿˜æœ‰å°±æ˜¯æˆ‘åªæ˜¯ä¸€ä¸ªåˆå­¦è€…ï¼Œæ³¨é‡Šææ€•åªæœ‰æˆ‘è‡ªå·±èƒ½çœ‹æ‡‚ï¼Œå“~
  *        ************************************************************************************************************************
- *        ÒÔÏÂ MAIN£¨£© ²¿·ÖµÄ´úÂëÓÃÓÚ²âÊÔ¹ş·òÂü±àÂëÉú³É
+ *        ä»¥ä¸‹ MAINï¼ˆï¼‰ éƒ¨åˆ†çš„ä»£ç ç”¨äºæµ‹è¯•å“ˆå¤«æ›¼ç¼–ç ç”Ÿæˆ
 */
 int main(void){
 	unsigned Carry,index,lineCnt;
 	void*lpHc;
-	struct POINTERS x;          //Õâ¸ö½á¹¹ÓÃÀ´½ÓÊÕ·µ»ØÖµ
+	struct POINTERS x;          //è¿™ä¸ªç»“æ„ç”¨æ¥æ¥æ”¶è¿”å›å€¼
 	char test[500];
 	puts("Enter A String [English]:");
 	gets(test); 
 	x = HuffManBuild(CreatHuffManTabl(test, strlen(test)),GET_CODE);
-	printf("¹²ÓĞ²»ÖØ¸´×Ö½Ú%3d¸ö\n",(int)x.p2);
-	lineCnt = (unsigned)x.p2;	   //ËäÈ»x.p2ÊÇÒ»¸öVOIDÖ¸Õë£¬µ«ÊÇÑ­»·ÊÇ¿ÉÒÔµÃ£¬±Ï¾¹ËüÒ²ÊÇÒ»¸öÊıÖµ
+	printf("å…±æœ‰ä¸é‡å¤å­—èŠ‚%3dä¸ª\n",(int)x.p2);
+	lineCnt = (unsigned)x.p2;	   //è™½ç„¶x.p2æ˜¯ä¸€ä¸ªVOIDæŒ‡é’ˆï¼Œä½†æ˜¯å¾ªç¯æ˜¯å¯ä»¥å¾—ï¼Œæ¯•ç«Ÿå®ƒä¹Ÿæ˜¯ä¸€ä¸ªæ•°å€¼
 	for (index = 0; lineCnt;index++,lineCnt--)
-	{   //ÍâÑ­»·Êä³ö»ù±¾ĞÅÏ¢
+	{   //å¤–å¾ªç¯è¾“å‡ºåŸºæœ¬ä¿¡æ¯
 		lpHc = (void*)x.p1 + index*sizeof(struct HUFFCODE);
-		printf("Öµ=%3d |  ±àÂë³¤¶È=%2d | ±àÂë = ", (*(struct HUFFCODE*)lpHc).bValue,(*(struct HUFFCODE*)lpHc).bDepth);
-		Carry = (unsigned)1 << ((*(struct HUFFCODE*)lpHc).bDepth - 1);        //Èç¹û±àÂë³¤¶ÈbDepthÊÇ5£¬ÄÇÃ´ĞèÒª´ÓµÚËÄÎ»¿ªÊ¼²âÊÔ£¨¶ş½øÖÆÎ»ºÍÊı×éÒ»Ñù£¬´Ó0¿ªÊ¼£©
+		printf("å€¼=%3d |  ç¼–ç é•¿åº¦=%2d | ç¼–ç  = ", (*(struct HUFFCODE*)lpHc).bValue,(*(struct HUFFCODE*)lpHc).bDepth);
+		Carry = (unsigned)1 << ((*(struct HUFFCODE*)lpHc).bDepth - 1);        //å¦‚æœç¼–ç é•¿åº¦bDepthæ˜¯5ï¼Œé‚£ä¹ˆéœ€è¦ä»ç¬¬å››ä½å¼€å§‹æµ‹è¯•ï¼ˆäºŒè¿›åˆ¶ä½å’Œæ•°ç»„ä¸€æ ·ï¼Œä»0å¼€å§‹ï¼‰
 		while ((*(struct HUFFCODE*)lpHc).bDepth--)
-		{   //ÄÚÑ­»·Êä³ö±àÂë
-			putchar(((*(struct HUFFCODE*)lpHc).bitVal & Carry) ? '1' : '0');  //Èç¹û¶ÔÓ¦Î»ÊÇ1ÔòÊä³ö1£¬ÊÇ0ÔòÊä³ö0
-			Carry >>= 1;                                                      //CarryÓÒÒÆ1Î»£¬×¼±¸¼ì²âÏÂÒ»Î»
+		{   //å†…å¾ªç¯è¾“å‡ºç¼–ç 
+			putchar(((*(struct HUFFCODE*)lpHc).bitVal & Carry) ? '1' : '0');  //å¦‚æœå¯¹åº”ä½æ˜¯1åˆ™è¾“å‡º1ï¼Œæ˜¯0åˆ™è¾“å‡º0
+			Carry >>= 1;                                                      //Carryå³ç§»1ä½ï¼Œå‡†å¤‡æ£€æµ‹ä¸‹ä¸€ä½
 		}  
-		putchar('\n');  //»»ĞĞÊä³öÏÂÒ»×éĞÅÏ¢
+		putchar('\n');  //æ¢è¡Œè¾“å‡ºä¸‹ä¸€ç»„ä¿¡æ¯
 	}
 	getchar();
 	return 0;
@@ -82,60 +82,60 @@ int main(void){
 
 struct POINTERS HuffManBuild(void*lpHuffTabl, int MODE)
 {
-	unsigned Quene[300] = { 0 };   	//¶ÓÁĞ£¬´æ·ÅÃ¿¸ö[´æ·ÅÊı¾İµÄHNODE½Úµã]µÄµØÖ·
-	//ÆäÊµÔÚWin32³ÌĞòÀïunsignedºÍÖ¸ÕëÍ¬Ñù¶¼ÊÇ32Î»µÄÖµ£¬ÒòÎªÖ¸Õë±¾À´Ò²ÊÇÖµ£¬ËùÒÔ¿ÉÒÔ´æ´¢ÔÚunsignedÊı×éÖĞ£¨Ëæ±ãÊ²Ã´ÀàĞÍ£¬Ö»ÒªÊÇ32Î»¾ÍĞĞ£¬Ïñvoid*,int*ÕâĞ©Ö¸ÕëÊı×éÒ²¿ÉÒÔ£©
+	unsigned Quene[300] = { 0 };   	//é˜Ÿåˆ—ï¼Œå­˜æ”¾æ¯ä¸ª[å­˜æ”¾æ•°æ®çš„HNODEèŠ‚ç‚¹]çš„åœ°å€
+	//å…¶å®åœ¨Win32ç¨‹åºé‡Œunsignedå’ŒæŒ‡é’ˆåŒæ ·éƒ½æ˜¯32ä½çš„å€¼ï¼Œå› ä¸ºæŒ‡é’ˆæœ¬æ¥ä¹Ÿæ˜¯å€¼ï¼Œæ‰€ä»¥å¯ä»¥å­˜å‚¨åœ¨unsignedæ•°ç»„ä¸­ï¼ˆéšä¾¿ä»€ä¹ˆç±»å‹ï¼Œåªè¦æ˜¯32ä½å°±è¡Œï¼Œåƒvoid*,int*è¿™äº›æŒ‡é’ˆæ•°ç»„ä¹Ÿå¯ä»¥ï¼‰
 	unsigned offset,totWeight;
 	unsigned indexQE, indexSE,indexHN,elemCnt,eCnt;
-	void*lpHnode, *lpTmpHnode, *RootPtr;   //lpTmpHnodeÊÇÖ¸Ïò¹ş·òÂüÊ÷£¨Á¬½Ó½ÚµãÊı×é£©µÄÖ¸Õë£¬lpHnodeÊÇÖ¸Ïò¹ş·òÂüÊ÷£¨Êı¾İ½ÚµãÊı×é£©µÄÖ¸Õë
+	void*lpHnode, *lpTmpHnode, *RootPtr;   //lpTmpHnodeæ˜¯æŒ‡å‘å“ˆå¤«æ›¼æ ‘ï¼ˆè¿æ¥èŠ‚ç‚¹æ•°ç»„ï¼‰çš„æŒ‡é’ˆï¼ŒlpHnodeæ˜¯æŒ‡å‘å“ˆå¤«æ›¼æ ‘ï¼ˆæ•°æ®èŠ‚ç‚¹æ•°ç»„ï¼‰çš„æŒ‡é’ˆ
 	void*hSeek,*tmphSeek;
 	void*lpHuffCode;                       
 	struct POINTERS iPointer;
-	if ((lpHnode = hAlloc(300 * sizeof(struct HNODE))) == NULL)	FailAlloc();  //Ê¹ÓÃWIN32º¯ÊıÖ÷ÒªÎªÁË·½±ã£¬Ö±½ÓÈ«0ÄÚ´æ¿é£¬²»È»Malloc»¹Òª³õÊ¼»¯
-	//indexQE  Ë÷Òı¶ÓÁĞ
-	//indexSE  Ë÷ÒıHUFFTABLÖĞµÄSUITELEM½á¹¹Êı×é
-	//indexHN  Ë÷ÒıHNODE½á¹¹Êı×é
-	eCnt = elemCnt = (*(struct HUFFTABL*)lpHuffTabl).tablElems;             //»ñÈ¡±íÖĞÔªËØ¸öÊı
+	if ((lpHnode = hAlloc(300 * sizeof(struct HNODE))) == NULL)	FailAlloc();  //ä½¿ç”¨WIN32å‡½æ•°ä¸»è¦ä¸ºäº†æ–¹ä¾¿ï¼Œç›´æ¥å…¨0å†…å­˜å—ï¼Œä¸ç„¶Mallocè¿˜è¦åˆå§‹åŒ–
+	//indexQE  ç´¢å¼•é˜Ÿåˆ—
+	//indexSE  ç´¢å¼•HUFFTABLä¸­çš„SUITELEMç»“æ„æ•°ç»„
+	//indexHN  ç´¢å¼•HNODEç»“æ„æ•°ç»„
+	eCnt = elemCnt = (*(struct HUFFTABL*)lpHuffTabl).tablElems;             //è·å–è¡¨ä¸­å…ƒç´ ä¸ªæ•°
 	for (indexQE = 0, indexSE = 0, indexHN = 0; eCnt>0; eCnt--, indexSE++,indexHN++)
 	{
-		Quene[indexQE++] = (unsigned)lpHnode + indexHN*sizeof(struct HNODE);   //Ã¿Ò»¸öHNODEÔªËØµÄµØÖ·µÈÓÚ HNODEÄÚ´æ¿é»ùÖ¸Õë+ÔªËØË÷Òı*Ò»¸öÔªËØÕ¼ÓĞµÄ×Ö½ÚÊı£¬ÕâÑù»òĞí²»ÓÃÃ¿Ò»´Î¶¼À´¸öMalloc()¡£
+		Quene[indexQE++] = (unsigned)lpHnode + indexHN*sizeof(struct HNODE);   //æ¯ä¸€ä¸ªHNODEå…ƒç´ çš„åœ°å€ç­‰äº HNODEå†…å­˜å—åŸºæŒ‡é’ˆ+å…ƒç´ ç´¢å¼•*ä¸€ä¸ªå…ƒç´ å æœ‰çš„å­—èŠ‚æ•°ï¼Œè¿™æ ·æˆ–è®¸ä¸ç”¨æ¯ä¸€æ¬¡éƒ½æ¥ä¸ªMalloc()ã€‚
 		((struct HNODE*)lpHnode)[indexHN].bValue = (*(struct HUFFTABL*)lpHuffTabl).elem[indexSE].sByte;
 		((struct HNODE*)lpHnode)[indexHN].weight = (*(struct HUFFTABL*)lpHuffTabl).elem[indexSE].sFreq;
 		((struct HNODE*)lpHnode)[indexHN].lpLeft = NULL;            
 		((struct HNODE*)lpHnode)[indexHN].lpRight = NULL;           
 		((struct HNODE*)lpHnode)[indexHN].lpParent = NULL;            
-		((struct HNODE*)lpHnode)[indexHN].isLeaf = TRUE;           //ÉèÖÃÊÇ·ñÎªÊı¾İ½Úµã£¨Õæ£©
+		((struct HNODE*)lpHnode)[indexHN].isLeaf = TRUE;           //è®¾ç½®æ˜¯å¦ä¸ºæ•°æ®èŠ‚ç‚¹ï¼ˆçœŸï¼‰
 	}
-	//ÒÔÏÂ²¿·ÖÖ÷ÒªÎª¹ş·òÂüÊ÷µÄ½¨Ôì
-	if ((lpTmpHnode = hAlloc(300 * sizeof(struct HNODE))) == NULL) FailAlloc(); //ÕâÀï·ÖÅäÒ»¸öHNODEÊı×é¡¾300¡¿
-	//eCnt = elemCnt  Ñ­»·¼ÆÊı
-	//eCnt > 1        ºÏ²¢´ÎÊı=ÔªËØ×ÜÊı-1´Î
-	//offset=0        Ö÷ÒªÓÃÓÚ¼ÆËãRootPtr£¨Ã¿´Î½á¹û¶¼»á±ÈÔ­Ö¸Õë´ósizeof(struct HNODE)¸ö×Ö½Ú£©£¬Ïàµ±ÓÚË÷Òı
+	//ä»¥ä¸‹éƒ¨åˆ†ä¸»è¦ä¸ºå“ˆå¤«æ›¼æ ‘çš„å»ºé€ 
+	if ((lpTmpHnode = hAlloc(300 * sizeof(struct HNODE))) == NULL) FailAlloc(); //è¿™é‡Œåˆ†é…ä¸€ä¸ªHNODEæ•°ç»„ã€300ã€‘
+	//eCnt = elemCnt  å¾ªç¯è®¡æ•°
+	//eCnt > 1        åˆå¹¶æ¬¡æ•°=å…ƒç´ æ€»æ•°-1æ¬¡
+	//offset=0        ä¸»è¦ç”¨äºè®¡ç®—RootPtrï¼ˆæ¯æ¬¡ç»“æœéƒ½ä¼šæ¯”åŸæŒ‡é’ˆå¤§sizeof(struct HNODE)ä¸ªå­—èŠ‚ï¼‰ï¼Œç›¸å½“äºç´¢å¼•
 	for (eCnt = elemCnt, offset = 0; eCnt > 1; offset++, eCnt--)
 	{
-		RootPtr = (void*)lpTmpHnode + offset*sizeof(struct HNODE);   //ÕâÒ»²½´Ó½ÚµãHNODE¿é»ñÈ¡Ò»¸ö½ÚµãHNODEÖ¸Õë,ÉÏÃæËµ¹ıÓÃ·¨¡£
-		indexQE=FindSmallest(Quene, elemCnt);                        //´Ó¶ÓÁĞÖĞ»ñÈ¡Ò»¸ö×îĞ¡È¨ÔªËØË÷Òı
-		(*(struct HNODE*)Quene[indexQE]).lpParent = (void*)RootPtr;  //ÉèÖÃÔªËØ¸¸½Úµã
-		totWeight = (*(struct HNODE*)Quene[indexQE]).weight;         //±£´æÒ»ÏÂÕâÔªËØµÄÈ¨Öµ
-		(*(struct HNODE*)RootPtr).lpLeft = (void*)Quene[indexQE];    //ÉèÖÃÔªËØ¸¸½Úµã
-		Quene[indexQE] = 0;                                          //½«Õâ¸öÔªËØ´Ó¶ÓÁĞÒÆ³ı£¬ÖÃ0µÄ»°¾Í»á±»FindSmallestÌø¹ı
-		indexQE = FindSmallest(Quene, elemCnt);                      //´Ó¶ÓÁĞ»ñÈ¡ÁíÒ»¸ö×îĞ¡È¨ÔªËØ
-		(*(struct HNODE*)Quene[indexQE]).lpParent = (void*)RootPtr;  //ÉèÖÃÔªËØ¸¸½Úµã
-		totWeight += (*(struct HNODE*)Quene[indexQE]).weight;        //ÇóÁ©¸ö×îĞ¡È¨ÔªËØµÄÈ¨Öµ
-		(*(struct HNODE*)RootPtr).lpRight = (void*)Quene[indexQE];   //½«ÔªËØÁ¬½Óµ½¸¸½ÚµãÓÒÖ§
-		(*(struct HNODE*)RootPtr).lpParent = NULL;                   //ÉèÖÃÁ¬½Ó½Úµã¸¸½ÚµãÎª¿Õ
-		(*(struct HNODE*)RootPtr).weight = totWeight;                //½«Á©¸ö×îĞ¡È¨ÔªËØµÄÈ¨Ğ´Èë¸¸½Úµã
-		(*(struct HNODE*)RootPtr).isLeaf = FALSE;                    //Á¬½Ó½Úµã·ÇÊı¾İ½Úµã
-		Quene[indexQE] = (unsigned)RootPtr;                         //½«ĞÂºÏ²¢µÄ½Úµã¼ÓÈë¶ÓÁĞ
+		RootPtr = (void*)lpTmpHnode + offset*sizeof(struct HNODE);   //è¿™ä¸€æ­¥ä»èŠ‚ç‚¹HNODEå—è·å–ä¸€ä¸ªèŠ‚ç‚¹HNODEæŒ‡é’ˆ,ä¸Šé¢è¯´è¿‡ç”¨æ³•ã€‚
+		indexQE=FindSmallest(Quene, elemCnt);                        //ä»é˜Ÿåˆ—ä¸­è·å–ä¸€ä¸ªæœ€å°æƒå…ƒç´ ç´¢å¼•
+		(*(struct HNODE*)Quene[indexQE]).lpParent = (void*)RootPtr;  //è®¾ç½®å…ƒç´ çˆ¶èŠ‚ç‚¹
+		totWeight = (*(struct HNODE*)Quene[indexQE]).weight;         //ä¿å­˜ä¸€ä¸‹è¿™å…ƒç´ çš„æƒå€¼
+		(*(struct HNODE*)RootPtr).lpLeft = (void*)Quene[indexQE];    //è®¾ç½®å…ƒç´ çˆ¶èŠ‚ç‚¹
+		Quene[indexQE] = 0;                                          //å°†è¿™ä¸ªå…ƒç´ ä»é˜Ÿåˆ—ç§»é™¤ï¼Œç½®0çš„è¯å°±ä¼šè¢«FindSmallestè·³è¿‡
+		indexQE = FindSmallest(Quene, elemCnt);                      //ä»é˜Ÿåˆ—è·å–å¦ä¸€ä¸ªæœ€å°æƒå…ƒç´ 
+		(*(struct HNODE*)Quene[indexQE]).lpParent = (void*)RootPtr;  //è®¾ç½®å…ƒç´ çˆ¶èŠ‚ç‚¹
+		totWeight += (*(struct HNODE*)Quene[indexQE]).weight;        //æ±‚ä¿©ä¸ªæœ€å°æƒå…ƒç´ çš„æƒå€¼
+		(*(struct HNODE*)RootPtr).lpRight = (void*)Quene[indexQE];   //å°†å…ƒç´ è¿æ¥åˆ°çˆ¶èŠ‚ç‚¹å³æ”¯
+		(*(struct HNODE*)RootPtr).lpParent = NULL;                   //è®¾ç½®è¿æ¥èŠ‚ç‚¹çˆ¶èŠ‚ç‚¹ä¸ºç©º
+		(*(struct HNODE*)RootPtr).weight = totWeight;                //å°†ä¿©ä¸ªæœ€å°æƒå…ƒç´ çš„æƒå†™å…¥çˆ¶èŠ‚ç‚¹
+		(*(struct HNODE*)RootPtr).isLeaf = FALSE;                    //è¿æ¥èŠ‚ç‚¹éæ•°æ®èŠ‚ç‚¹
+		Quene[indexQE] = (unsigned)RootPtr;                         //å°†æ–°åˆå¹¶çš„èŠ‚ç‚¹åŠ å…¥é˜Ÿåˆ—
 	}
-	//Èç¹ûÊÇGET_TREEÄ£Ê½£¬ÄÇÃ´·µ»ØÒ»¿ÃÊ÷ 
+	//å¦‚æœæ˜¯GET_TREEæ¨¡å¼ï¼Œé‚£ä¹ˆè¿”å›ä¸€æ£µæ ‘ 
 	if (MODE)            
 	{
-		iPointer.p1 = (void*)RootPtr;                                //RootPtrÖ¸Ïò¸ù½Úµã
-		iPointer.p2 = (void*)lpTmpHnode;                             //ÕâÁ©¸öÖ÷ÒªÊÇÎªÊÍ·ÅÄÚ´æ£¬ÒòÎªÊ÷»¹Ã»ÓĞÓÃ£¬ÔİÊ±²»ÄÜÊÍ·Å¡£
+		iPointer.p1 = (void*)RootPtr;                                //RootPtræŒ‡å‘æ ¹èŠ‚ç‚¹
+		iPointer.p2 = (void*)lpTmpHnode;                             //è¿™ä¿©ä¸ªä¸»è¦æ˜¯ä¸ºé‡Šæ”¾å†…å­˜ï¼Œå› ä¸ºæ ‘è¿˜æ²¡æœ‰ç”¨ï¼Œæš‚æ—¶ä¸èƒ½é‡Šæ”¾ã€‚
 		iPointer.p3 = (void*)lpHnode;                             
 		return iPointer;
 	}
-	//·ÖÅäHUFFCODE½á¹¹Êı×éÄÚ´æ¿é
+	//åˆ†é…HUFFCODEç»“æ„æ•°ç»„å†…å­˜å—
 	if ((lpHuffCode = hAlloc(300 * sizeof(struct HUFFCODE))) == NULL) FailAlloc();
 	for (offset = 0, indexHN = 0, eCnt = elemCnt; eCnt--; indexHN++, offset++)
 	{
@@ -143,28 +143,28 @@ struct POINTERS HuffManBuild(void*lpHuffTabl, int MODE)
 		(*(struct HUFFCODE*)(lpHuffCode + offset*sizeof(struct HUFFCODE))).bValue = (*(struct HNODE*)hSeek).bValue;
 		while ((*(struct HNODE*)hSeek).lpParent)
 		{
-			tmphSeek = hSeek;                                  //±£´æÖ¸ÕëÓÃÓÚ±È½ÏÔÚ×ó±ß»¹ÊÇÓÒ±ß
+			tmphSeek = hSeek;                                  //ä¿å­˜æŒ‡é’ˆç”¨äºæ¯”è¾ƒåœ¨å·¦è¾¹è¿˜æ˜¯å³è¾¹
 			hSeek = (*(struct HNODE*)hSeek).lpParent;          //p=p->next;
 			if ((*(struct HNODE*)hSeek).lpLeft == tmphSeek)
-			{   //ÔÚ×ó±ß£¬Ğ´Èë0
+			{   //åœ¨å·¦è¾¹ï¼Œå†™å…¥0
 				RCR(&((*(struct HUFFCODE*)(lpHuffCode + offset*sizeof(struct HUFFCODE))).bitVal), 0);
 			}
 			else
-			{   //ÔÚÓÒ±ß£¬Ğ´Èë1
+			{   //åœ¨å³è¾¹ï¼Œå†™å…¥1
 				RCR(&((*(struct HUFFCODE*)(lpHuffCode + offset*sizeof(struct HUFFCODE))).bitVal), 1);
 			}
-			++(*(struct HUFFCODE*)(lpHuffCode + offset*sizeof(struct HUFFCODE))).bDepth;  //±àÂë³¤¶È++
+			++(*(struct HUFFCODE*)(lpHuffCode + offset*sizeof(struct HUFFCODE))).bDepth;  //ç¼–ç é•¿åº¦++
 		}
 		(*(struct HUFFCODE*)(lpHuffCode + offset*sizeof(struct HUFFCODE))).bitVal >>= (32 - (*(struct HUFFCODE*)(int)(lpHuffCode + offset*sizeof(struct HUFFCODE))).bDepth);
 	}
-	iPointer.p1 = (void*)lpHuffCode;                                               //·µ»ØHUFFCODEÊı×éÖ¸Õë
-	iPointer.p2 = (void*)elemCnt;                                                  //·µ»ØÔªËØ¸öÊı£¨ÕâÊÇ¿ÉÒÔµÃ£©
+	iPointer.p1 = (void*)lpHuffCode;                                               //è¿”å›HUFFCODEæ•°ç»„æŒ‡é’ˆ
+	iPointer.p2 = (void*)elemCnt;                                                  //è¿”å›å…ƒç´ ä¸ªæ•°ï¼ˆè¿™æ˜¯å¯ä»¥å¾—ï¼‰
 	hFree(lpTmpHnode);
 	hFree(lpHnode);
 	return iPointer;
 }
-//RCRº¯ÊıµÄ×÷ÓÃÊÇ£¬¸ø¶¨Ò»¸öunsigned(dest)Öµ£¬¸ø¶¨Ò»¸ö¿ª¹Ø±êÖ¾ 0 or 1£¨flag)£¬½«Õâ¸ö±êÖ¾Î»ÒÆÎ»µ½µ½¸ÃÖµµÄ×î×ó±ßÒ»Î»
-//¼ÙÈçÒ»¸öÖµ iVal=8£¨¶ş½øÖÆ 0000 1000£©£¬ÕâÑùµ÷ÓÃRCR(&iVal,1),ÄÇÃ´iVal½á¹ûÊÇ 132£¨¶ş½øÖÆ1000 0100£©
+//RCRå‡½æ•°çš„ä½œç”¨æ˜¯ï¼Œç»™å®šä¸€ä¸ªunsigned(dest)å€¼ï¼Œç»™å®šä¸€ä¸ªå¼€å…³æ ‡å¿— 0 or 1ï¼ˆflag)ï¼Œå°†è¿™ä¸ªæ ‡å¿—ä½ç§»ä½åˆ°åˆ°è¯¥å€¼çš„æœ€å·¦è¾¹ä¸€ä½
+//å‡å¦‚ä¸€ä¸ªå€¼ iVal=8ï¼ˆäºŒè¿›åˆ¶ 0000 1000ï¼‰ï¼Œè¿™æ ·è°ƒç”¨RCR(&iVal,1),é‚£ä¹ˆiValç»“æœæ˜¯ 132ï¼ˆäºŒè¿›åˆ¶1000 0100ï¼‰
 void RCR(unsigned*dest, unsigned flag)
 {
 	*dest >>= 1;
@@ -181,12 +181,12 @@ void* CreatHuffManTabl(void*lpData, unsigned bCnt)
 	if ((lpFreqTabl = hAlloc(300 * sizeof( unsigned))) == NULL) FailAlloc();
 	if ((lpHuffTabl = hAlloc(sizeof(struct HUFFTABL))) == NULL) FailAlloc();
 	while (tmpCnt++<bCnt) index = *(unsigned char*)lpData++, lpFreqTabl[index]++;
-	//´ÓÊı¾İÇø»ñÈ¡Ò»¸ö×Ö½Ú×÷ÎªË÷Òı£¬²¢Ö¸ÏòÏÂÒ»¸ö×Ö½Ú
-    //¼ÙÈç¸Ã×Ö½ÚÊÇ126£¬ÄÇÃ´×Ö½Ú126µÄ³öÏÖÆµÂÊ¼Ó 1
+	//ä»æ•°æ®åŒºè·å–ä¸€ä¸ªå­—èŠ‚ä½œä¸ºç´¢å¼•ï¼Œå¹¶æŒ‡å‘ä¸‹ä¸€ä¸ªå­—èŠ‚
+    //å‡å¦‚è¯¥å­—èŠ‚æ˜¯126ï¼Œé‚£ä¹ˆå­—èŠ‚126çš„å‡ºç°é¢‘ç‡åŠ  1
 	for (validCnt = 256, index = 255; index !=(unsigned)-1; index--)
 	{
 		if (!lpFreqTabl[index])
-			--validCnt;         //Èç¹û¸Ã×Ö½Ú¶ÔÓ¦µÄÆµÂÊÎª0£¬ÄÇÃ´Õâ¸ö×Ö½ÚÎ´³öÏÖ¹ı£¬ÉáÆú
+			--validCnt;         //å¦‚æœè¯¥å­—èŠ‚å¯¹åº”çš„é¢‘ç‡ä¸º0ï¼Œé‚£ä¹ˆè¿™ä¸ªå­—èŠ‚æœªå‡ºç°è¿‡ï¼Œèˆå¼ƒ
 	}
 	(*(struct HUFFTABL*)lpHuffTabl).tablElems = validCnt;
 	for (index = 0; validCnt ; validCnt--)
